@@ -6,6 +6,8 @@ In memory chunk store that is [abstract-chunk-store](https://github.com/mafintos
 npm install memory-chunk-store
 ```
 
+[![build status](http://img.shields.io/travis/mafintosh/memory-chunk-store.svg?style=flat)](http://travis-ci.org/mafintosh/memory-chunk-store)
+
 ## Usage
 
 ``` js
