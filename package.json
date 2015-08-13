@@ -12,6 +12,14 @@
   "scripts": {
     "test": "standard && node test"
   },
+  "keywords": [
+    "abstract-chunk-store",
+    "memory",
+    "in memory",
+    "in-memory",
+    "chunk",
+    "store"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/mafintosh/memory-chunk-store.git"
