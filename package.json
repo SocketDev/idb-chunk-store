@@ -1,6 +1,6 @@
 {
   "name": "memory-chunk-store",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "In memory chunk store that is abstract-chunk-store compliant",
   "main": "index.js",
   "dependencies": {},
