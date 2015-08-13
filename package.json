@@ -1,33 +1,33 @@
 {
   "name": "memory-chunk-store",
-  "version": "1.0.1",
   "description": "In memory chunk store that is abstract-chunk-store compliant",
-  "main": "index.js",
+  "version": "1.0.1",
+  "author": "Mathias Buus (@mafintosh)",
+  "bugs": {
+    "url": "https://github.com/mafintosh/memory-chunk-store/issues"
+  },
   "dependencies": {},
   "devDependencies": {
     "abstract-chunk-store": "^1.0.0",
     "standard": "^5.0.2",
     "tape": "^4.1.0"
   },
-  "scripts": {
-    "test": "standard && node test"
-  },
+  "homepage": "https://github.com/mafintosh/memory-chunk-store",
   "keywords": [
     "abstract-chunk-store",
-    "memory",
+    "chunk",
     "in memory",
     "in-memory",
-    "chunk",
+    "memory",
     "store"
   ],
+  "license": "MIT",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/mafintosh/memory-chunk-store.git"
   },
-  "author": "Mathias Buus (@mafintosh)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/mafintosh/memory-chunk-store/issues"
-  },
-  "homepage": "https://github.com/mafintosh/memory-chunk-store"
+  "scripts": {
+    "test": "standard && node test"
+  }
 }
