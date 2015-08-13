@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
-    "abstract-chunk-store": "0.0.0",
+    "abstract-chunk-store": "^1.0.0",
     "standard": "^5.0.2",
     "tape": "^4.1.0"
   },
