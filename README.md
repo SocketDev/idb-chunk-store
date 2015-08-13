@@ -12,13 +12,13 @@ npm install memory-chunk-store
 
 ``` js
 var mem = require('memory-chunk-store')
-var chunks = mem()
+var chunks = mem(10)
 
-chunks.put(0, new Buffer('first chunk'), function (err) {
+chunks.put(0, new Buffer('01234567890'), function (err) {
   if (err) throw err
   chunks.get(0, function (err, chunk) {
     if (err) throw err
-    console.log(chunk) // 'first chunk' as a buffer
+    console.log(chunk) // '01234567890' as a buffer
   })
 })
 ```
