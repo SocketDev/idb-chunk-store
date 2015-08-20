@@ -25,7 +25,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mafintosh/memory-chunk-store.git"
+    "url": "git://github.com/mafintosh/memory-chunk-store.git"
   },
   "scripts": {
     "test": "standard && node test"
