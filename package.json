@@ -1,7 +1,7 @@
 {
   "name": "memory-chunk-store",
   "description": "In memory chunk store that is abstract-chunk-store compliant",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "author": "Mathias Buus (@mafintosh)",
   "bugs": {
     "url": "https://github.com/mafintosh/memory-chunk-store/issues"
