@@ -1,10 +1,10 @@
 {
-  "name": "memory-chunk-store",
-  "description": "In memory chunk store that is abstract-chunk-store compliant",
-  "version": "1.2.0",
-  "author": "Mathias Buus (@mafintosh)",
+  "name": "idb-chunk-store",
+  "description": "IndexedDB chunk store that is abstract-chunk-store compliant",
+  "version": "0.1.0",
+  "author": "Santiago Gil (@_santiagogil_)",
   "bugs": {
-    "url": "https://github.com/mafintosh/memory-chunk-store/issues"
+    "url": "https://github.com/MinEduTDF/idb-chunk-store/issues"
   },
   "dependencies": {},
   "devDependencies": {
@@ -12,7 +12,7 @@
     "standard": "^5.0.2",
     "tape": "^4.1.0"
   },
-  "homepage": "https://github.com/mafintosh/memory-chunk-store",
+  "homepage": "https://github.com/MinEduTDF/idb-chunk-store",
   "keywords": [
     "abstract-chunk-store",
     "chunk",
@@ -25,7 +25,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/mafintosh/memory-chunk-store.git"
+    "url": "git://github.com/MinEduTDF/idb-chunk-store.git"
   },
   "scripts": {
     "test": "standard && node test"
