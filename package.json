@@ -6,7 +6,10 @@
   "bugs": {
     "url": "https://github.com/MinEduTDF/idb-chunk-store/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "inherits": "^2.0.1",
+    "testling": "^1.7.1"
+  },
   "devDependencies": {
     "abstract-chunk-store": "^1.0.0",
     "standard": "^5.0.2",
@@ -28,6 +31,6 @@
     "url": "git://github.com/MinEduTDF/idb-chunk-store.git"
   },
   "scripts": {
-    "test": "standard && node test"
+    "test": "standard && browserify test.js | testling"
   }
 }
