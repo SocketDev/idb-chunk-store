@@ -1,18 +1,17 @@
-# memory-chunk-store [![build status](http://img.shields.io/travis/mafintosh/memory-chunk-store.svg?style=flat)](http://travis-ci.org/mafintosh/memory-chunk-store)
-
-#### In memory chunk store that is [abstract-chunk-store](https://github.com/mafintosh/abstract-chunk-store) compliant
+# idb-chunk-store 
+#### IndexedDB chunk store that is [abstract-chunk-store](https://github.com/mafintosh/abstract-chunk-store) compliant
 
 ## Install
 
 ```
-npm install memory-chunk-store
+npm install idb-chunk-store
 ```
 
 ## Usage
 
 ``` js
-var mem = require('memory-chunk-store')
-var chunks = mem(10)
+var idbChunkStore = require('idb-chunk-store')
+var chunks = idbChunkStore(10)
 
 chunks.put(0, new Buffer('01234567890'), function (err) {
   if (err) throw err
