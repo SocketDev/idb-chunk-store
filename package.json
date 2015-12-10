@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "inherits": "^2.0.1",
-    "testling": "^1.7.1"
   },
   "devDependencies": {
     "abstract-chunk-store": "^1.0.0",
@@ -31,6 +30,6 @@
     "url": "git://github.com/MinEduTDF/idb-chunk-store.git"
   },
   "scripts": {
-    "test": "standard && browserify test.js | testling"
+    "test": "browserify test.js > bundle.js && xdg-open index.html && echo 'see your browser console for results'"
   }
 }
