@@ -4,13 +4,14 @@ var inherits = require('inherits')
 module.exports = Storage
 
 inherits(Storage, EventEmitter)
-
+// vr idb = require('fake-indexeddb')
 var idb = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB
 
 function Storage (chunkLength, opts) {
   if (!(this instanceof Storage)) return new Storage(chunkLength, opts)
   if (!opts) opts = {}
   EventEmitter.call(this)
+  this.setMaxListeners(100)
 
   var self = this
   this.chunkLength = Number(chunkLength)
@@ -61,7 +62,7 @@ Storage.prototype.put = function (index, buf, cb) {
   }
   this._store('readwrite', function (err, store) {
     if (err) return cb(err)
-    backify(store.put(buf, index), wait(store, cb))
+    backify(store.put(JSON.stringify(buf), index), wait(store, cb))
   })
 }
 
@@ -72,24 +73,27 @@ function wait (store, cb) {
     if (err) cb(err)
     else done()
   }
-  function done () { if (--pending === 0) cb(null) }
+  function done () { if (cb && --pending === 0) cb(null) }
 }
 
 Storage.prototype.get = function (index, opts, cb) {
   if (typeof opts === 'function') return this.get(index, null, opts)
   if (this.closed) return nextTick(cb, new Error('Storage is closed'))
-  var buf = this.chunks[index]
-  if (!buf) return nextTick(cb, new Error('Chunk not found'))
-  if (!opts) return nextTick(cb, null, buf)
-  var offset = opts.offset || 0
-  var len = opts.length || (buf.length - offset)
+
   this._store('readonly', function (err, store) {
     if (err) {
       cb(err)
     } else {
       backify(store.get(index), function (err, ev) {
-        if (err) cb(err)
-        else cb(null, ev.target.result.slice(offset, len + offset))
+        if (err) {
+          cb(err)
+        } else {
+          var buf = new Buffer(JSON.parse(ev.target.result).data)
+          if (!opts) return nextTick(cb, null, buf)
+          var offset = opts.offset || 0
+          var len = opts.length || (buf.length - offset)
+          cb(null, buf.slice(offset, len + offset))
+        }
       })
     }
   })
@@ -97,9 +101,9 @@ Storage.prototype.get = function (index, opts, cb) {
 
 Storage.prototype.close = Storage.prototype.destroy = function (cb) {
   if (this.closed) return nextTick(cb, new Error('Storage is closed'))
+  if (!this.db) return nextTick(cb, undefined)
   this.closed = true
-  this._store.db.deleteObjectStore('chunks')
-  this._store.db.close()
+  // self.db.close()
   nextTick(cb, null)
 }
 
