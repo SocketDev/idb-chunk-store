@@ -27,7 +27,7 @@ function Storage (chunkLength, opts) {
 
   self._ready = false
 
-  var request = idb.open('chunksDB')
+  var request = idb.open(opts.name || 'chunksDB')
   request.addEventListener('upgradeneeded', function () {
     var db = request.result
     db.createObjectStore('chunks')
@@ -87,6 +87,8 @@ Storage.prototype.get = function (index, opts, cb) {
       backify(store.get(index), function (err, ev) {
         if (err) {
           cb(err)
+        } else if (ev.target.result === undefined) {
+          cb(null, new Buffer(0))
         } else {
           var buf = new Buffer(JSON.parse(ev.target.result).data)
           if (!opts) return nextTick(cb, null, buf)
