@@ -22,6 +22,14 @@ chunks.put(0, new Buffer('01234567890'), function (err) {
 })
 ```
 
+## API
+
+### var store = idbChunkStore(chunkLength, opts={})
+
+Create a new chunk store with chunks of size `chunkLength`.
+
+* `opts.name` - use a name to separate the contents of different stores
+
 ## License
 
 MIT

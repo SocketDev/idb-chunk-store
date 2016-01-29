@@ -27,7 +27,7 @@ function Storage (chunkLength, opts) {
 
   self._ready = false
 
-  var request = idb.open('chunksDB')
+  var request = idb.open(opts.name || 'chunksDB')
   request.addEventListener('upgradeneeded', function () {
     var db = request.result
     db.createObjectStore('chunks')
