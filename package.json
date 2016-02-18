@@ -12,7 +12,8 @@
   "devDependencies": {
     "abstract-chunk-store": "^1.0.0",
     "standard": "^5.0.2",
-    "tape": "^4.1.0"
+    "tape": "^4.1.0",
+    "zuul": "^3.9.0"
   },
   "homepage": "https://github.com/MinEduTDF/idb-chunk-store",
   "keywords": [
@@ -30,6 +31,7 @@
     "url": "git://github.com/MinEduTDF/idb-chunk-store.git"
   },
   "scripts": {
-    "test": "browserify test.js > bundle.js && xdg-open index.html && echo 'see your browser console for results'"
+    "test": "zuul -- test.js",
+    "local-test": "zuul --local -- test.js"
   }
 }
