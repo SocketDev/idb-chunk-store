@@ -1,4 +1,4 @@
-# idb-chunk-store 
+# idb-chunk-store [![Build Status](https://travis-ci.org/MinEduTDF/idb-chunk-store.svg?branch=master)](https://travis-ci.org/MinEduTDF/idb-chunk-store)[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 #### IndexedDB chunk store that is [abstract-chunk-store](https://github.com/mafintosh/abstract-chunk-store) compliant
 
 ## Install
