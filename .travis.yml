@@ -1,8 +1,7 @@
 language: node_js
 node_js:
-  - '0.10'
-  - '0.12'
-  - iojs
+  - '4'
+  - '6'
 env:
   global:
     - secure: e073DQTAsXH7tMWKOfg3LwJ9B3RUr79zsY3UiFbv4SyX6vdE67SFCENPYPWppOwsn9kcUBwwjMb+aW/fVh9PfsOyJlqqVFgJEnZP+ScO7RLlD6vNbnEiKjdv/8Zhs1d04UVevEqzd0buHGzZMhCJWRG2Sp2MG7zkBNMcin84z/nI0+88Vh/dfhld0DLl3VfprZ6zuIxrW9QgvsQnVDTqlUOxxJzekTXV1dwtyl7rRaTx6Iw63S2sBETDlAk7F/a7mkFL6qBTbVNJMsfdXGwItaeF8u+1AthcNf59QCBRfivwI5a/1jaKyfTn5YqRqbeQ5Zs/UqaSuKhHk3QXFLt8cmH4QHAy/cH8kbFP00yIinBcIHP7dPMVQpwXauRe1uz6qJwR0FQVSp7zwa2tXIqoOmhqIpxxICPAre6/4ilegjpqLuFrARxXd7BIvrhLVz0xl6vFqkaz8C8HiFH3jYlqnKOaNyJPuy6ivmAUVN2NFp0ygg3BVL/Z7GT8RtVYbRHf4xWGfwI5mDOUSwUo73LctXw3eYXGHVRhk/unaKajT4MHzd4tt6G7mjhy8AhKjryfF87uhdYtUtyAQAQtpcDQzmjDWNbZTH/Os2Y+HtpMM/yUADdpvXqkSobzzUE7GcnYvEH/7vu4CrnWYqqzjs35T4rrf6UsS1Q0fJpvVUx/dmk=
