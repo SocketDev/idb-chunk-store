@@ -12,7 +12,7 @@
   "devDependencies": {
     "abstract-chunk-store": "^1.0.0",
     "standard": "^7.0.0",
-    "tape": "^4.1.0",
+    "tape": "^4.6.0",
     "zuul": "^3.11.0"
   },
   "homepage": "https://github.com/MinEduTDF/idb-chunk-store",
