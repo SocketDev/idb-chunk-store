@@ -5,7 +5,9 @@ module.exports = Storage
 
 inherits(Storage, EventEmitter)
 // vr idb = require('fake-indexeddb')
-var idb = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB
+/* global self */
+var env = typeof window === 'object' ? window : self
+var idb = env.indexedDB || env.mozIndexedDB || env.webkitIndexedDB || env.msIndexedDB
 
 function Storage (chunkLength, opts) {
   if (!(this instanceof Storage)) return new Storage(chunkLength, opts)
