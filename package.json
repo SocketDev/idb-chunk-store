@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "abstract-chunk-store": "^1.0.0",
-    "standard": "^8.0.0",
+    "standard": "^9.0.0",
     "tape": "^4.6.0",
     "zuul": "^3.11.0"
   },
