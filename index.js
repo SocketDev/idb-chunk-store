@@ -64,7 +64,7 @@ Storage.prototype.put = function (index, buf, cb) {
   }
   this._store('readwrite', function (err, store) {
     if (err) return cb(err)
-    backify(store.put(JSON.stringify(buf), index), wait(store, cb))
+    backify(store.put(buf, index), wait(store, cb))
   })
 }
 
@@ -92,7 +92,7 @@ Storage.prototype.get = function (index, opts, cb) {
         } else if (ev.target.result === undefined) {
           cb(null, new Buffer(0))
         } else {
-          var buf = new Buffer(JSON.parse(ev.target.result).data)
+          var buf = new Buffer(ev.target.result)
           if (!opts) return nextTick(cb, null, buf)
           var offset = opts.offset || 0
           var len = opts.length || (buf.length - offset)
