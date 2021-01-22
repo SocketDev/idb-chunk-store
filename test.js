@@ -9,6 +9,6 @@ tape('empty test case', function (t) {
   const store = idb(5, { name: 'test-store-' + Math.random() })
   store.get(0, function (err, buf) {
     t.ifError(err)
-    t.deepEqual(buf, Buffer(0))
+    t.deepEqual(buf, Buffer.alloc(0))
   })
 })
