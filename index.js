@@ -1,12 +1,12 @@
-var EventEmitter = require('events').EventEmitter
-var inherits = require('inherits')
+const EventEmitter = require('events').EventEmitter
+const inherits = require('inherits')
 
 module.exports = Storage
 
 inherits(Storage, EventEmitter)
 // vr idb = require('fake-indexeddb')
 
-let idb = globalThis.indexedDB || globalThis.mozIndexedDB || globalThis.webkitIndexedDB || globalThis.msIndexedDB
+const idb = globalThis.indexedDB || globalThis.mozIndexedDB || globalThis.webkitIndexedDB || globalThis.msIndexedDB
 
 function Storage (chunkLength, opts) {
   if (!(this instanceof Storage)) return new Storage(chunkLength, opts)
@@ -14,7 +14,7 @@ function Storage (chunkLength, opts) {
   EventEmitter.call(this)
   this.setMaxListeners(100)
 
-  var self = this
+  const self = this
   this.chunkLength = Number(chunkLength)
   if (!this.chunkLength) throw new Error('First argument must be a chunk length')
 
@@ -28,9 +28,9 @@ function Storage (chunkLength, opts) {
 
   self._ready = false
 
-  var request = idb.open(opts.name || 'chunksDB')
+  const request = idb.open(opts.name || 'chunksDB')
   request.addEventListener('upgradeneeded', function () {
-    var db = request.result
+    const db = request.result
     db.createObjectStore('chunks')
   })
   request.addEventListener('success', function () {
@@ -40,13 +40,13 @@ function Storage (chunkLength, opts) {
 }
 
 Storage.prototype._store = function (mode, cb) {
-  var self = this
+  const self = this
   if (!self.db) return self.once('ready', ready)
   else process.nextTick(ready)
 
   function ready () {
-    var trans = self.db.transaction(['chunks'], mode)
-    var store = trans.objectStore('chunks')
+    const trans = self.db.transaction(['chunks'], mode)
+    const store = trans.objectStore('chunks')
     trans.addEventListener('error', function (err) { cb(err) })
     cb(null, store)
   }
@@ -54,7 +54,7 @@ Storage.prototype._store = function (mode, cb) {
 Storage.prototype.put = function (index, buf, cb) {
   if (this.closed) return nextTick(cb, new Error('Storage is closed'))
 
-  var isLastChunk = (index === this.lastChunkIndex)
+  const isLastChunk = (index === this.lastChunkIndex)
   if (isLastChunk && buf.length !== this.lastChunkLength) {
     return nextTick(cb, new Error('Last chunk length must be ' + this.lastChunkLength))
   }
@@ -68,7 +68,7 @@ Storage.prototype.put = function (index, buf, cb) {
 }
 
 function wait (store, cb) {
-  var pending = 2
+  let pending = 2
   store.transaction.addEventListener('complete', done)
   return function (err) {
     if (err) cb(err)
@@ -91,10 +91,10 @@ Storage.prototype.get = function (index, opts, cb) {
         } else if (ev.target.result === undefined) {
           cb(null, new Buffer(0))
         } else {
-          var buf = new Buffer(ev.target.result)
+          const buf = new Buffer(ev.target.result)
           if (!opts) return nextTick(cb, null, buf)
-          var offset = opts.offset || 0
-          var len = opts.length || (buf.length - offset)
+          const offset = opts.offset || 0
+          const len = opts.length || (buf.length - offset)
           cb(null, buf.slice(offset, len + offset))
         }
       })
