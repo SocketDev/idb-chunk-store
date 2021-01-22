@@ -7,13 +7,13 @@
     "url": "https://github.com/MinEduTDF/idb-chunk-store/issues"
   },
   "dependencies": {
-    "inherits": "^2.0.3"
+    "inherits": "^2.0.4"
   },
   "devDependencies": {
-    "abstract-chunk-store": "^1.0.0",
+    "abstract-chunk-store": "^1.4.0",
     "airtap": "^3.0.0",
-    "standard": "^9.0.0",
-    "tape": "^4.6.0"
+    "standard": "^16.0.3",
+    "tape": "^5.1.1"
   },
   "homepage": "https://github.com/MinEduTDF/idb-chunk-store",
   "keywords": [
