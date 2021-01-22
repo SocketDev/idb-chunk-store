@@ -11,9 +11,9 @@
   },
   "devDependencies": {
     "abstract-chunk-store": "^1.0.0",
+    "airtap": "^3.0.0",
     "standard": "^9.0.0",
-    "tape": "^4.6.0",
-    "zuul": "^3.11.0"
+    "tape": "^4.6.0"
   },
   "homepage": "https://github.com/MinEduTDF/idb-chunk-store",
   "keywords": [
@@ -31,7 +31,7 @@
     "url": "git://github.com/MinEduTDF/idb-chunk-store.git"
   },
   "scripts": {
-    "test": "zuul -- test.js",
-    "local-test": "zuul --local -- test.js"
+    "local-test": "zuul --local -- test.js",
+    "test": "zuul -- test.js"
   }
 }
