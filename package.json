@@ -1,7 +1,7 @@
 {
   "name": "idb-chunk-store",
   "description": "IndexedDB chunk store that is abstract-chunk-store compliant",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "Santiago Gil (@_santiagogil_)",
   "bugs": {
     "url": "https://github.com/MinEduTDF/idb-chunk-store/issues"
