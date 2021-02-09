@@ -92,9 +92,14 @@ Storage.prototype.get = function (index, opts, cb) {
           cb(null, Buffer.alloc(0))
         } else {
           const buf = Buffer.from(ev.target.result)
-          if (!opts) return nextTick(cb, null, buf)
+          if (!opts) return cb(null, buf)
           const offset = opts.offset || 0
           const len = opts.length || (buf.length - offset)
+
+          if (opts.offset === 0 && len === buf.length - offset) {
+            return cb(null, buf)
+          }
+
           cb(null, buf.slice(offset, len + offset))
         }
       })
