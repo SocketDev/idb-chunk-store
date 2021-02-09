@@ -7,7 +7,8 @@
     "url": "https://github.com/MinEduTDF/idb-chunk-store/issues"
   },
   "dependencies": {
-    "inherits": "^2.0.4"
+    "inherits": "^2.0.4",
+    "queue-microtask": "^1.2.2"
   },
   "devDependencies": {
     "abstract-chunk-store": "^1.4.0",
