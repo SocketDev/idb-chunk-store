@@ -1,5 +1,6 @@
 const EventEmitter = require('events').EventEmitter
 const inherits = require('inherits')
+const queueMicrotask = require('queue-microtask')
 
 module.exports = Storage
 
@@ -116,7 +117,7 @@ Storage.prototype.close = Storage.prototype.destroy = function (cb) {
 }
 
 function nextTick (cb, err, val) {
-  process.nextTick(function () {
+  queueMicrotask(function () {
     if (cb) cb(err, val)
   })
 }
