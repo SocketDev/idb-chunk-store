@@ -43,7 +43,7 @@ function Storage (chunkLength, opts) {
 Storage.prototype._store = function (mode, cb) {
   const self = this
   if (!self.db) return self.once('ready', ready)
-  else process.nextTick(ready)
+  else nextTick(ready)
 
   function ready () {
     const trans = self.db.transaction(['chunks'], mode)
