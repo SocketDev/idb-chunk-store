@@ -20,7 +20,9 @@ function Storage (chunkLength, opts) {
   if (!this.chunkLength) throw new Error('First argument must be a chunk length')
 
   this.closed = false
+  this.destroyed = false
   this.length = Number(opts.length) || Infinity
+  this.name = opts.name || 'chunksDB'
 
   if (this.length !== Infinity) {
     this.lastChunkLength = (this.length % this.chunkLength) || this.chunkLength
@@ -29,7 +31,7 @@ function Storage (chunkLength, opts) {
 
   self._ready = false
 
-  const request = idb.open(opts.name || 'chunksDB')
+  const request = idb.open(this.name)
   request.addEventListener('upgradeneeded', function () {
     const db = request.result
     db.createObjectStore('chunks')
@@ -108,12 +110,31 @@ Storage.prototype.get = function (index, opts, cb) {
   })
 }
 
-Storage.prototype.close = Storage.prototype.destroy = function (cb) {
+Storage.prototype.close = function (cb) {
   if (this.closed) return nextTick(cb, new Error('Storage is closed'))
   if (!this.db) return nextTick(cb, undefined)
   this.closed = true
-  // self.db.close()
+  this.db.close()
   nextTick(cb, null)
+}
+
+Storage.prototype.destroy = function (cb) {
+  const self = this
+  if (this.closed) return nextTick(cb, new Error('Storage is closed'))
+  if (this.destroyed) return nextTick(cb, new Error('Storage is destroyed'))
+  this.destroyed = true
+
+  if (!self.db) return self.once('ready', ready)
+  else ready()
+
+  function ready () {
+    this.close(function (err) {
+      if (err) return cb(err)
+      backify(idb.deleteDatabase(self.name), function (err) {
+        cb(err)
+      })
+    })
+  }
 }
 
 function nextTick (cb, err, val) {
