@@ -45,7 +45,7 @@ function Storage (chunkLength, opts) {
 Storage.prototype._store = function (mode, cb) {
   const self = this
   if (!self.db) return self.once('ready', ready)
-  else nextTick(ready)
+  ready()
 
   function ready () {
     const trans = self.db.transaction(['chunks'], mode)
@@ -65,7 +65,7 @@ Storage.prototype.put = function (index, buf, cb) {
     return nextTick(cb, new Error('Chunk length must be ' + this.chunkLength))
   }
   this._store('readwrite', function (err, store) {
-    if (err) return cb(err)
+    if (err) return nextTick(cb, err)
     backify(store.put(buf, index), wait(store, cb))
   })
 }
@@ -86,7 +86,7 @@ Storage.prototype.get = function (index, opts, cb) {
 
   this._store('readonly', function (err, store) {
     if (err) {
-      cb(err)
+      nextTick(cb, err)
     } else {
       backify(store.get(index), function (err, ev) {
         if (err) {
@@ -125,7 +125,7 @@ Storage.prototype.destroy = function (cb) {
   this.destroyed = true
 
   if (!self.db) return self.once('ready', ready)
-  else ready()
+  ready()
 
   function ready () {
     this.close(function (err) {
