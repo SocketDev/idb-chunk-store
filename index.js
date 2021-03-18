@@ -92,7 +92,9 @@ Storage.prototype.get = function (index, opts, cb) {
         if (err) {
           cb(err)
         } else if (ev.target.result === undefined) {
-          cb(null, Buffer.alloc(0))
+          const err = new Error('Chunk not found')
+          err.notFound = true
+          cb(err)
         } else {
           const buf = Buffer.from(ev.target.result)
           if (!opts) return cb(null, buf)
