@@ -147,5 +147,5 @@ function nextTick (cb, err, val) {
 
 function backify (r, cb) {
   r.addEventListener('success', function (ev) { cb(null, ev) })
-  r.addEventListener('error', function (err) { cb(err) })
+  r.addEventListener('error', function (ev) { cb(ev.target.error) })
 }
