@@ -130,7 +130,7 @@ Storage.prototype.destroy = function (cb) {
   ready()
 
   function ready () {
-    this.close(function (err) {
+    self.close(function (err) {
       if (err) return cb(err)
       backify(idb.deleteDatabase(self.name), function (err) {
         cb(err)
