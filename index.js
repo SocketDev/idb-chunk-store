@@ -39,6 +39,11 @@ function Storage (chunkLength, opts) {
   })
   request.addEventListener('success', function () {
     self.db = request.result
+    self.db.addEventListener('versionchange', function () {
+      // Fires if the database is deleted from outside this Storage object
+      self.close()
+    })
+
     self.emit('ready')
   })
 }
@@ -133,10 +138,7 @@ Storage.prototype.destroy = function (cb) {
   function ready () {
     self.close(function (err) {
       if (err) return cb(err)
-      const request = idb.deleteDatabase(self.name)
-      // Fail (don't deadlock) if another connection is open to the same db
-      request.addEventListener('blocked', function () { cb(new Error('blocked')) })
-      backify(request, function (err) {
+      backify(idb.deleteDatabase(self.name), function (err) {
         cb(err)
       })
     })
