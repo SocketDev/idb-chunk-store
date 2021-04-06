@@ -133,7 +133,10 @@ Storage.prototype.destroy = function (cb) {
   function ready () {
     self.close(function (err) {
       if (err) return cb(err)
-      backify(idb.deleteDatabase(self.name), function (err) {
+      const request = idb.deleteDatabase(self.name)
+      // Fail (don't deadlock) if another connection is open to the same db
+      request.addEventListener('blocked', function () { cb(new Error('blocked')) })
+      backify(request, function (err) {
         cb(err)
       })
     })
