@@ -58,7 +58,7 @@ Storage.prototype._store = function (mode, cb) {
     try {
       trans = self.db.transaction(['chunks'], mode)
     } catch (err) {
-      return nextTick(cb, err)
+      return cb(err)
     }
     const store = trans.objectStore('chunks')
     trans.addEventListener('error', function (err) { cb(err) })
