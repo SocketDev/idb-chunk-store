@@ -61,7 +61,6 @@ Storage.prototype._store = function (mode, cb) {
       return cb(err)
     }
     const store = trans.objectStore('chunks')
-    trans.addEventListener('error', function (err) { cb(err) })
     cb(null, store)
   }
 }
@@ -83,10 +82,24 @@ Storage.prototype.put = function (index, buf, cb) {
 
 function wait (store, cb) {
   let pending = 2
+  store.transaction.addEventListener('abort', function (ev) {
+    if (cb) {
+      const originalCb = cb
+      cb = null
+      originalCb(ev.target.error || new Error('transaction aborted'))
+    }
+  })
   store.transaction.addEventListener('complete', done)
   return function (err) {
-    if (err) cb(err)
-    else done()
+    if (err) {
+      if (cb) {
+        const originalCb = cb
+        cb = null
+        originalCb(err)
+      }
+    } else {
+      done()
+    }
   }
   function done () { if (cb && --pending === 0) cb(null) }
 }
@@ -99,7 +112,15 @@ Storage.prototype.get = function (index, opts, cb) {
     if (err) {
       nextTick(cb, err)
     } else {
+      // Listen for abort
+      function onAbort (ev) {
+        cb(ev.target.error || new Error('transaction aborted'))
+      }
+      store.transaction.addEventListener('abort', onAbort)
       backify(store.get(index), function (err, ev) {
+        // Once here, we're guaranteed to call the callback; no need to listen for abort
+        store.transaction.removeEventListener('abort', onAbort)
+
         if (err) {
           cb(err)
         } else if (ev.target.result === undefined) {
