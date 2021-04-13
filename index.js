@@ -61,7 +61,6 @@ Storage.prototype._store = function (mode, cb) {
       return cb(err)
     }
     const store = trans.objectStore('chunks')
-    trans.addEventListener('error', function (err) { cb(err) })
     cb(null, store)
   }
 }
@@ -82,7 +81,12 @@ Storage.prototype.put = function (index, buf, cb) {
 }
 
 function wait (store, cb) {
+  cb = once(cb)
+
   let pending = 2
+  store.transaction.addEventListener('abort', function (ev) {
+    cb(ev.target.error || new Error('transaction aborted'))
+  })
   store.transaction.addEventListener('complete', done)
   return function (err) {
     if (err) cb(err)
@@ -95,10 +99,15 @@ Storage.prototype.get = function (index, opts, cb) {
   if (typeof opts === 'function') return this.get(index, null, opts)
   if (this.closed) return nextTick(cb, new Error('Storage is closed'))
 
+  cb = once(cb)
+
   this._store('readonly', function (err, store) {
     if (err) {
       nextTick(cb, err)
     } else {
+      store.transaction.addEventListener('abort', function (ev) {
+        cb(ev.target.error || new Error('transaction aborted'))
+      })
       backify(store.get(index), function (err, ev) {
         if (err) {
           cb(err)
@@ -159,4 +168,15 @@ function nextTick (cb, err, val) {
 function backify (r, cb) {
   r.addEventListener('success', function (ev) { cb(null, ev) })
   r.addEventListener('error', function (ev) { cb(ev.target.error) })
+}
+
+function once (cb) {
+  let ran = false
+
+  return function (err, ...args) {
+    if (!ran && cb) {
+      ran = true
+      cb(err, ...args)
+    }
+  }
 }
