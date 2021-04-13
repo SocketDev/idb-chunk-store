@@ -81,25 +81,16 @@ Storage.prototype.put = function (index, buf, cb) {
 }
 
 function wait (store, cb) {
+  cb = once(cb)
+
   let pending = 2
   store.transaction.addEventListener('abort', function (ev) {
-    if (cb) {
-      const originalCb = cb
-      cb = null
-      originalCb(ev.target.error || new Error('transaction aborted'))
-    }
+    cb(ev.target.error || new Error('transaction aborted'))
   })
   store.transaction.addEventListener('complete', done)
   return function (err) {
-    if (err) {
-      if (cb) {
-        const originalCb = cb
-        cb = null
-        originalCb(err)
-      }
-    } else {
-      done()
-    }
+    if (err) cb(err)
+    else done()
   }
   function done () { if (cb && --pending === 0) cb(null) }
 }
@@ -108,19 +99,16 @@ Storage.prototype.get = function (index, opts, cb) {
   if (typeof opts === 'function') return this.get(index, null, opts)
   if (this.closed) return nextTick(cb, new Error('Storage is closed'))
 
+  cb = once(cb)
+
   this._store('readonly', function (err, store) {
     if (err) {
       nextTick(cb, err)
     } else {
-      // Listen for abort
-      function onAbort (ev) {
+      store.transaction.addEventListener('abort', function (ev) {
         cb(ev.target.error || new Error('transaction aborted'))
-      }
-      store.transaction.addEventListener('abort', onAbort)
+      })
       backify(store.get(index), function (err, ev) {
-        // Once here, we're guaranteed to call the callback; no need to listen for abort
-        store.transaction.removeEventListener('abort', onAbort)
-
         if (err) {
           cb(err)
         } else if (ev.target.result === undefined) {
@@ -180,4 +168,15 @@ function nextTick (cb, err, val) {
 function backify (r, cb) {
   r.addEventListener('success', function (ev) { cb(null, ev) })
   r.addEventListener('error', function (ev) { cb(ev.target.error) })
+}
+
+function once (cb) {
+  let ran = false
+
+  return function (err, ...args) {
+    if (!ran && cb) {
+      ran = true
+      cb(err, ...args)
+    }
+  }
 }
