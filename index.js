@@ -74,6 +74,7 @@ Storage.prototype.put = function (index, buf, cb) {
   if (!isLastChunk && buf.length !== this.chunkLength) {
     return nextTick(cb, new Error('Chunk length must be ' + this.chunkLength))
   }
+  buf = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength)
   this._store('readwrite', function (err, store) {
     if (err) return nextTick(cb, err)
     backify(store.put(buf, index), wait(store, cb))
