@@ -135,9 +135,3 @@ class Storage extends EventEmitter {
   }
 }
 module.exports = Storage
-
-function nextTick (cb, err, val) {
-  queueMicrotask(function () {
-    if (cb) cb(err, val)
-  })
-}
