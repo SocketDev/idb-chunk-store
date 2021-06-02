@@ -4,35 +4,37 @@
   "version": "0.3.4",
   "author": "Santiago Gil (@_santiagogil_)",
   "bugs": {
-    "url": "https://github.com/MinEduTDF/idb-chunk-store/issues"
+    "url": "https://github.com/SocketDev/idb-chunk-store/issues"
   },
   "dependencies": {
-    "inherits": "^2.0.4",
-    "queue-microtask": "^1.2.2"
+    "idb": "^6.1.2",
+    "queue-microtask": "^1.2.3"
   },
   "devDependencies": {
-    "abstract-chunk-store": "^1.4.0",
-    "airtap": "^3.0.0",
+    "abstract-chunk-store": "^1.5.0",
+    "airtap": "^4.0.3",
+    "airtap-manual": "^1.0.0",
+    "airtap-sauce": "^1.1.2",
     "standard": "^16.0.3",
-    "tape": "^5.1.1"
+    "tape": "^5.2.2"
   },
-  "homepage": "https://github.com/MinEduTDF/idb-chunk-store",
+  "homepage": "https://github.com/SocketDev/idb-chunk-store",
   "keywords": [
     "abstract-chunk-store",
     "chunk",
-    "in memory",
-    "in-memory",
-    "memory",
+    "idb",
+    "indexeddb",
     "store"
   ],
   "license": "MIT",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/MinEduTDF/idb-chunk-store.git"
+    "url": "git://github.com/SocketDev/idb-chunk-store.git"
   },
   "scripts": {
-    "test": "airtap -- test.js",
-    "test-local": "airtap --local -- test.js"
+    "test": "standard && npm run test-browser",
+    "test-browser": "airtap --concurrency 1 -- test.js",
+    "test-browser-local": "airtap airtap --preset local -- test.js"
   }
 }

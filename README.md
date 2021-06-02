@@ -2,6 +2,8 @@
 
 #### IndexedDB chunk store that is [abstract-chunk-store](https://github.com/mafintosh/abstract-chunk-store) compliant
 
+For versions before 1.0, see https://github.com/MinEduTDF/idb-chunk-store
+
 ## Install
 
 ```
