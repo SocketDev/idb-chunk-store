@@ -8,7 +8,6 @@ class Storage extends EventEmitter {
   constructor (chunkLength, opts) {
     if (!opts) opts = {}
     super()
-    this.setMaxListeners(100)
 
     this.chunkLength = Number(chunkLength)
     if (!this.chunkLength) throw new Error('First argument must be a chunk length')
@@ -16,7 +15,7 @@ class Storage extends EventEmitter {
     this.closed = false
     this.destroyed = false
     this.length = Number(opts.length) || Infinity
-    this.name = opts.name || 'chunksDB'
+    this.name = opts.name || 'idb-chunk-store'
 
     if (this.length !== Infinity) {
       this.lastChunkLength = (this.length % this.chunkLength) || this.chunkLength
@@ -32,13 +31,13 @@ class Storage extends EventEmitter {
         this.close()
       },
       terminated: () => {
+        this.closed = true
         this.emit('error', new Error('Database unexpectedly closed'))
       }
     })
   }
 
-  put (index, buf, cb) {
-    if (!cb) cb = () => {}
+  put (index, buf, cb = () => {}) {
     if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
 
     const isLastChunk = (index === this.lastChunkIndex)
@@ -48,7 +47,15 @@ class Storage extends EventEmitter {
     if (!isLastChunk && buf.length !== this.chunkLength) {
       return queueMicrotask(() => cb(new Error('Chunk length must be ' + this.chunkLength)))
     }
+
+    // Zero-copy coerce Buffer to Uint8Array
     buf = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength)
+
+    // If the backing buffer is larger, copy out only the relevant slice
+    // so extra data doesn't get saved to indexeddb
+    if (buf.byteOffset !== 0 || buf.byteLength !== buf.buffer.byteLength) {
+      buf = buf.slice()
+    }
 
     ;(async () => {
       try {
@@ -63,10 +70,8 @@ class Storage extends EventEmitter {
     })()
   }
 
-  get (index, opts, cb) {
-    if (typeof opts === 'function') return this.get(index, null, opts)
-    if (!opts) opts = {}
-    if (!cb) cb = () => {}
+  get (index, opts = {}, cb = () => {}) {
+    if (typeof opts === 'function') return this.get(index, {}, opts)
     if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
 
     ;(async () => {
@@ -86,7 +91,7 @@ class Storage extends EventEmitter {
         return
       }
 
-      let buf = Buffer.from(rawResult)
+      let buf = Buffer.from(rawResult.buffer, rawResult.byteOffset, rawResult.byteLength)
 
       const offset = opts.offset || 0
       const len = opts.length || (buf.length - offset)
@@ -99,20 +104,23 @@ class Storage extends EventEmitter {
     })()
   }
 
-  close (cb) {
-    if (!cb) cb = () => {}
+  close (cb = () => {}) {
     if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
     this.closed = true
 
     this.dbPromise.then((db) => {
-      db.close()
+      try {
+        db.close()
+      } catch (err) {
+        cb(err)
+        return
+      }
 
       cb(null)
     }, cb)
   }
 
-  destroy (cb) {
-    if (!cb) cb = () => {}
+  destroy (cb = () => {}) {
     if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
     if (this.destroyed) return queueMicrotask(() => cb(new Error('Storage is destroyed')))
     this.destroyed = true
