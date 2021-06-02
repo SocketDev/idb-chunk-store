@@ -108,8 +108,9 @@ class Storage extends EventEmitter {
     if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
     this.closed = true
 
-    this.dbPromise.then((db) => {
+    ;(async () => {
       try {
+        const db = await this.dbPromise
         db.close()
       } catch (err) {
         cb(err)
@@ -117,7 +118,7 @@ class Storage extends EventEmitter {
       }
 
       cb(null)
-    }, cb)
+    })()
   }
 
   destroy (cb = () => {}) {
