@@ -1,183 +1,143 @@
 'use strict'
+const idb = require('idb')
+
 const EventEmitter = require('events').EventEmitter
-const inherits = require('inherits')
 const queueMicrotask = require('queue-microtask')
 
-module.exports = Storage
+class Storage extends EventEmitter {
+  constructor (chunkLength, opts) {
+    if (!opts) opts = {}
+    super()
+    this.setMaxListeners(100)
 
-inherits(Storage, EventEmitter)
-// vr idb = require('fake-indexeddb')
+    this.chunkLength = Number(chunkLength)
+    if (!this.chunkLength) throw new Error('First argument must be a chunk length')
 
-const idb = globalThis.indexedDB || globalThis.mozIndexedDB || globalThis.webkitIndexedDB || globalThis.msIndexedDB
+    this.closed = false
+    this.destroyed = false
+    this.length = Number(opts.length) || Infinity
+    this.name = opts.name || 'chunksDB'
 
-function Storage (chunkLength, opts) {
-  if (!(this instanceof Storage)) return new Storage(chunkLength, opts)
-  if (!opts) opts = {}
-  EventEmitter.call(this)
-  this.setMaxListeners(100)
+    if (this.length !== Infinity) {
+      this.lastChunkLength = (this.length % this.chunkLength) || this.chunkLength
+      this.lastChunkIndex = Math.ceil(this.length / this.chunkLength) - 1
+    }
 
-  const self = this
-  this.chunkLength = Number(chunkLength)
-  if (!this.chunkLength) throw new Error('First argument must be a chunk length')
-
-  this.closed = false
-  this.destroyed = false
-  this.length = Number(opts.length) || Infinity
-  this.name = opts.name || 'chunksDB'
-
-  if (this.length !== Infinity) {
-    this.lastChunkLength = (this.length % this.chunkLength) || this.chunkLength
-    this.lastChunkIndex = Math.ceil(this.length / this.chunkLength) - 1
-  }
-
-  self._ready = false
-
-  const request = idb.open(this.name)
-  request.addEventListener('upgradeneeded', function () {
-    const db = request.result
-    db.createObjectStore('chunks')
-  })
-  request.addEventListener('success', function () {
-    self.db = request.result
-    self.db.addEventListener('versionchange', function () {
-      // Fires if the database is deleted from outside this Storage object
-      self.close()
+    this.dbPromise = idb.openDB(this.name, undefined, {
+      upgrade: (db) => {
+        db.createObjectStore('chunks')
+      },
+      blocking: () => {
+        // Fires if the database is deleted from outside this Storage object
+        this.close()
+      },
+      terminated: () => {
+        this.emit('error', new Error('Database unexpectedly closed'))
+      }
     })
+  }
 
-    self.emit('ready')
-  })
-}
+  put (index, buf, cb) {
+    if (!cb) cb = () => {}
+    if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
 
-Storage.prototype._store = function (mode, cb) {
-  const self = this
-  if (!self.db) return self.once('ready', ready)
-  ready()
-
-  function ready () {
-    let trans
-    try {
-      trans = self.db.transaction(['chunks'], mode)
-    } catch (err) {
-      return cb(err)
+    const isLastChunk = (index === this.lastChunkIndex)
+    if (isLastChunk && buf.length !== this.lastChunkLength) {
+      return queueMicrotask(() => cb(new Error('Last chunk length must be ' + this.lastChunkLength)))
     }
-    const store = trans.objectStore('chunks')
-    cb(null, store)
-  }
-}
-Storage.prototype.put = function (index, buf, cb) {
-  if (this.closed) return nextTick(cb, new Error('Storage is closed'))
-
-  const isLastChunk = (index === this.lastChunkIndex)
-  if (isLastChunk && buf.length !== this.lastChunkLength) {
-    return nextTick(cb, new Error('Last chunk length must be ' + this.lastChunkLength))
-  }
-  if (!isLastChunk && buf.length !== this.chunkLength) {
-    return nextTick(cb, new Error('Chunk length must be ' + this.chunkLength))
-  }
-  buf = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength)
-  this._store('readwrite', function (err, store) {
-    if (err) return nextTick(cb, err)
-    backify(store.put(buf, index), wait(store, cb))
-  })
-}
-
-function wait (store, cb) {
-  cb = once(cb)
-
-  let pending = 2
-  store.transaction.addEventListener('abort', function (ev) {
-    cb(ev.target.error || new Error('transaction aborted'))
-  })
-  store.transaction.addEventListener('complete', done)
-  return function (err) {
-    if (err) cb(err)
-    else done()
-  }
-  function done () { if (cb && --pending === 0) cb(null) }
-}
-
-Storage.prototype.get = function (index, opts, cb) {
-  if (typeof opts === 'function') return this.get(index, null, opts)
-  if (this.closed) return nextTick(cb, new Error('Storage is closed'))
-
-  cb = once(cb)
-
-  this._store('readonly', function (err, store) {
-    if (err) {
-      nextTick(cb, err)
-    } else {
-      store.transaction.addEventListener('abort', function (ev) {
-        cb(ev.target.error || new Error('transaction aborted'))
-      })
-      backify(store.get(index), function (err, ev) {
-        if (err) {
-          cb(err)
-        } else if (ev.target.result === undefined) {
-          const err = new Error('Chunk not found')
-          err.notFound = true
-          cb(err)
-        } else {
-          const buf = Buffer.from(ev.target.result)
-          if (!opts) return cb(null, buf)
-          const offset = opts.offset || 0
-          const len = opts.length || (buf.length - offset)
-
-          if (opts.offset === 0 && len === buf.length - offset) {
-            return cb(null, buf)
-          }
-
-          cb(null, buf.slice(offset, len + offset))
-        }
-      })
+    if (!isLastChunk && buf.length !== this.chunkLength) {
+      return queueMicrotask(() => cb(new Error('Chunk length must be ' + this.chunkLength)))
     }
-  })
-}
+    buf = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength)
 
-Storage.prototype.close = function (cb) {
-  if (this.closed) return nextTick(cb, new Error('Storage is closed'))
-  if (!this.db) return nextTick(cb, undefined)
-  this.closed = true
-  this.db.close()
-  nextTick(cb, null)
-}
-
-Storage.prototype.destroy = function (cb) {
-  const self = this
-  if (this.closed) return nextTick(cb, new Error('Storage is closed'))
-  if (this.destroyed) return nextTick(cb, new Error('Storage is destroyed'))
-  this.destroyed = true
-
-  if (!self.db) return self.once('ready', ready)
-  ready()
-
-  function ready () {
-    self.close(function (err) {
-      if (err) return cb(err)
-      backify(idb.deleteDatabase(self.name), function (err) {
+    ;(async () => {
+      try {
+        const db = await this.dbPromise
+        await db.put('chunks', buf, index)
+      } catch (err) {
         cb(err)
-      })
+        return
+      }
+
+      cb(null)
+    })()
+  }
+
+  get (index, opts, cb) {
+    if (typeof opts === 'function') return this.get(index, null, opts)
+    if (!opts) opts = {}
+    if (!cb) cb = () => {}
+    if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
+
+    ;(async () => {
+      let rawResult
+      try {
+        const db = await this.dbPromise
+        rawResult = await db.get('chunks', index)
+      } catch (err) {
+        cb(err)
+        return
+      }
+
+      if (rawResult === undefined) {
+        const err = new Error('Chunk not found')
+        err.notFound = true
+        cb(err)
+        return
+      }
+
+      let buf = Buffer.from(rawResult)
+
+      const offset = opts.offset || 0
+      const len = opts.length || (buf.length - offset)
+
+      if (offset !== 0 || len !== buf.length) {
+        buf = buf.slice(offset, len + offset)
+      }
+
+      cb(null, buf)
+    })()
+  }
+
+  close (cb) {
+    if (!cb) cb = () => {}
+    if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
+    this.closed = true
+
+    this.dbPromise.then((db) => {
+      db.close()
+
+      cb(null)
+    }, cb)
+  }
+
+  destroy (cb) {
+    if (!cb) cb = () => {}
+    if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
+    if (this.destroyed) return queueMicrotask(() => cb(new Error('Storage is destroyed')))
+    this.destroyed = true
+
+    this.close(async (err) => {
+      if (err) {
+        cb(err)
+        return
+      }
+
+      try {
+        await idb.deleteDB(this.name)
+      } catch (err) {
+        cb(err)
+        return
+      }
+
+      cb(null)
     })
   }
 }
+module.exports = Storage
 
 function nextTick (cb, err, val) {
   queueMicrotask(function () {
     if (cb) cb(err, val)
   })
-}
-
-function backify (r, cb) {
-  r.addEventListener('success', function (ev) { cb(null, ev) })
-  r.addEventListener('error', function (ev) { cb(ev.target.error) })
-}
-
-function once (cb) {
-  let ran = false
-
-  return function (err, ...args) {
-    if (!ran && cb) {
-      ran = true
-      cb(err, ...args)
-    }
-  }
 }

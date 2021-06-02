@@ -7,7 +7,7 @@
     "url": "https://github.com/MinEduTDF/idb-chunk-store/issues"
   },
   "dependencies": {
-    "inherits": "^2.0.4",
+    "idb": "^6.1.2",
     "queue-microtask": "^1.2.2"
   },
   "devDependencies": {
@@ -20,9 +20,8 @@
   "keywords": [
     "abstract-chunk-store",
     "chunk",
-    "in memory",
-    "in-memory",
-    "memory",
+    "idb",
+    "indexeddb",
     "store"
   ],
   "license": "MIT",
