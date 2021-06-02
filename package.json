@@ -8,13 +8,15 @@
   },
   "dependencies": {
     "idb": "^6.1.2",
-    "queue-microtask": "^1.2.2"
+    "queue-microtask": "^1.2.3"
   },
   "devDependencies": {
-    "abstract-chunk-store": "^1.4.0",
-    "airtap": "^3.0.0",
+    "abstract-chunk-store": "^1.5.0",
+    "airtap": "^4.0.3",
+    "airtap-manual": "^1.0.0",
+    "airtap-sauce": "^1.1.2",
     "standard": "^16.0.3",
-    "tape": "^5.1.1"
+    "tape": "^5.2.2"
   },
   "homepage": "https://github.com/MinEduTDF/idb-chunk-store",
   "keywords": [
@@ -31,7 +33,8 @@
     "url": "git://github.com/MinEduTDF/idb-chunk-store.git"
   },
   "scripts": {
-    "test": "airtap -- test.js",
-    "test-local": "airtap --local -- test.js"
+    "test": "standard && npm run test-browser",
+    "test-browser": "airtap --concurrency 1 -- test.js",
+    "test-browser-local": "airtap airtap --preset local -- test.js"
   }
 }

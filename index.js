@@ -70,8 +70,9 @@ class Storage extends EventEmitter {
     })()
   }
 
-  get (index, opts = {}, cb = () => {}) {
+  get (index, opts, cb = () => {}) {
     if (typeof opts === 'function') return this.get(index, {}, opts)
+    if (!opts) opts = {}
     if (this.closed) return queueMicrotask(() => cb(new Error('Storage is closed')))
 
     ;(async () => {
