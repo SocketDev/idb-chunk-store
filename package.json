@@ -4,7 +4,7 @@
   "version": "0.3.4",
   "author": "Santiago Gil (@_santiagogil_)",
   "bugs": {
-    "url": "https://github.com/MinEduTDF/idb-chunk-store/issues"
+    "url": "https://github.com/SocketDev/idb-chunk-store/issues"
   },
   "dependencies": {
     "idb": "^6.1.2",
@@ -18,7 +18,7 @@
     "standard": "^16.0.3",
     "tape": "^5.2.2"
   },
-  "homepage": "https://github.com/MinEduTDF/idb-chunk-store",
+  "homepage": "https://github.com/SocketDev/idb-chunk-store",
   "keywords": [
     "abstract-chunk-store",
     "chunk",
@@ -30,7 +30,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/MinEduTDF/idb-chunk-store.git"
+    "url": "git://github.com/SocketDev/idb-chunk-store.git"
   },
   "scripts": {
     "test": "standard && npm run test-browser",
