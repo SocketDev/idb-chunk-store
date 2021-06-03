@@ -85,7 +85,9 @@ class Storage extends EventEmitter {
         return
       }
 
-      if (rawResult === undefined) {
+      // rawResult should be undefined if the chunk is not found,
+      // but some old browsers occasionally return null
+      if (rawResult == null) {
         const err = new Error('Chunk not found')
         err.notFound = true
         cb(err)
