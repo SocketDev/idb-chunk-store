@@ -1,6 +1,6 @@
 # idb-chunk-store 
 
-[![Socket Badge](https://socket.dev/api/badge/npm/pkg/idb-chunk-store)](https://socket.dev/npm/package/idb-chunk-store)
+[![Socket Badge](https://socket.dev/api/badge/npm/package/idb-chunk-store)](https://socket.dev/npm/package/idb-chunk-store)
 [![ci][ci-image]][ci-url] [![npm][npm-image]][npm-url] [![downloads][downloads-image]][downloads-url] [![javascript style guide][standard-image]][standard-url]
 
 [ci-image]: https://img.shields.io/github/workflow/status/SocketDev/idb-chunk-store/ci/master
