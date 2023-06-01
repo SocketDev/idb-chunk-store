@@ -94,7 +94,7 @@ class Storage extends EventEmitter {
         return
       }
 
-      let buf = Buffer.from(rawResult.buffer, rawResult.byteOffset, rawResult.byteLength)
+      let buf = new Uint8Array(rawResult.buffer, rawResult.byteOffset, rawResult.byteLength)
 
       const offset = opts.offset || 0
       const len = opts.length || (buf.length - offset)
